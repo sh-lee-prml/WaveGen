@@ -18,7 +18,6 @@
   <p>
     <sup>1</sup>Department of Artificial Intelligence, Ajou University, Suwon, Korea<br>
     <sup>2</sup>Frontier AI Lab, KT Corp., Seoul, Korea<br>
-    <sup>*</sup>Equal contribution. Corresponding author: Sang-Hoon Lee.
   </p>
 </div>
 
