@@ -1,0 +1,1 @@
+"""Packaged WaveGen configurations."""

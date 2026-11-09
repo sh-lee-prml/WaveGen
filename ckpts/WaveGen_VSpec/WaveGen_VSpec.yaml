@@ -1,0 +1,49 @@
+model:
+  name: WaveGen_Emilia_24k_50Hz_SF_80bin_ibdim32_drop02
+  tokenizer: pinyin
+  backbone: DiT
+  cfm:
+    prediction: x_pred
+    loss_space: v
+    t_sampling: logistic_normal
+    P_mean: -0.8
+    P_std: 0.8
+    time_shift: 1.0
+    t_eps: 0.02
+    latents_scale: 9.0
+    use_aux_mel_loss: false
+    aux_mel_loss_weight: 0.0
+    use_ms_v_spec_loss: true
+    ms_v_spec_loss_weight: 0.1
+    aux_mel_loss_masked: true
+    sf_loss_weight: 0.1
+    mel_xt_drop_prob: 0.0
+    inference_bottleneck_dropout: 0.2
+    inference_bottleneck_dropout_seed: 0
+    sample_rate: 24000
+    joint_cond_drop_prob: 0.1
+  arch:
+    dim: 1152
+    depth: 24
+    heads: 16
+    dropout: 0.0
+    ff_mult: 4
+    text_dim: 512
+    text_mask_padding: true
+    qk_norm: null
+    conv_layers: 4
+    pe_attn_head: null
+    attn_backend: torch
+    attn_mask_enabled: false
+    checkpoint_activations: false
+    mel_channels: 80
+    use_mel_information_bottleneck: true
+    mel_bottleneck_dim: 32
+    mel_bottleneck_dropout: 0.2
+    mel_bottleneck_zero_init: false
+    use_audio_proj: true
+    audio_proj_dim: 1024
+    audio_proj_hidden: 2048
+  waveform:
+    target_sample_rate: 24000
+    wav_frame_len: 480

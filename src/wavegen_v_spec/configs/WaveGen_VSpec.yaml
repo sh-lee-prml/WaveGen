@@ -1,0 +1,104 @@
+# Fresh full-generator tuning from the original 1300k EMA weights.
+# Train all parameters: shared trunk, waveform/Mel DDTs and both output heads.
+# Objective: original waveform v-MSE + SF 0.1 + legacy MS-V-Spec 0.1.
+# No D, adversarial, feature matching, AuxMel, REPA or perceptual loss.
+# No dataset peak normalization or inference changes.
+# Fresh AdamW; three complete prepared-loader epochs, not a fixed update count.
+# New EMA copies Online after stage update 2000, then uses original SF
+# ema_pytorch beta=0.9999 / update_every=10 and its original decay warmup.
+# Same-branch resume preserves Online, optimizer, EMA, RNG and data cursor.
+hydra:
+  run:
+    dir: ckpts/${ckpts.exp_name}/${now:%Y-%m-%d}/${now:%H-%M-%S}
+
+datasets:
+  name: Emilia_ZH_EN
+  batch_size_per_gpu: 19200
+  batch_size_type: frame
+  max_samples: 64
+  num_workers: 8
+
+optim:
+  stage_epochs: 3
+  optimizer: AdamW
+  learning_rate: 2.0e-6
+  num_warmup_updates: 2000
+  warmup_start_lr: 2.0e-7
+  betas: [0.9, 0.999]
+  weight_decay: 0.01
+  eps: 1.0e-8
+  grad_accumulation_steps: 1
+  max_grad_norm: 1.0
+  bnb_optimizer: false
+  resume_expected_update: 1300000
+
+ema:
+  start_update: 2000
+  decay: 0.9999
+  update_every: 10
+
+model:
+  name: WaveGen_Emilia_24k_50Hz_SF_80bin_ibdim32_drop02
+  tokenizer: pinyin
+  tokenizer_path: null
+  backbone: DiT
+  training_mask_align_to: 512
+  cfm:
+    prediction: x_pred
+    loss_space: v
+    t_sampling: logistic_normal
+    P_mean: -0.8
+    P_std: 0.8
+    time_shift: 1.0
+    t_eps: 0.02
+    latents_scale: 9.0
+    use_aux_mel_loss: false
+    aux_mel_loss_weight: 0.0
+    use_ms_v_spec_loss: true
+    # Existing WaveGen loss: STFT of unscaled waveform prediction error.
+    ms_v_spec_loss_weight: 0.1
+    aux_mel_loss_masked: true
+    sf_loss_weight: 0.1  # Active training objective, not skipped.
+    mel_xt_drop_prob: 0.0
+    inference_bottleneck_dropout: 0.2
+    inference_bottleneck_dropout_seed: 0
+    sample_rate: 24000
+    joint_cond_drop_prob: 0.1
+  arch:
+    dim: 1152
+    depth: 24
+    heads: 16
+    dropout: 0.0
+    ff_mult: 4
+    text_dim: 512
+    text_mask_padding: true
+    qk_norm: null
+    conv_layers: 4
+    pe_attn_head: null
+    attn_backend: torch
+    attn_mask_enabled: false
+    checkpoint_activations: false
+    mel_channels: 80
+    use_mel_information_bottleneck: true
+    mel_bottleneck_dim: 32
+    mel_bottleneck_dropout: 0.2
+    mel_bottleneck_zero_init: false
+    use_audio_proj: true
+    audio_proj_dim: 1024
+    audio_proj_hidden: 2048
+  waveform:
+    target_sample_rate: 24000
+    wav_frame_len: 480
+
+ckpts:
+  source_ckpt: ckpts/WaveGen/model_1300000.pt
+  resume_ckpt: null
+  source_size_bytes: 10890285502
+  source_sha256: 9aec19b1826e77abeb6e7f0314d40c48103663de5046b30d2d5182e6a0117f44
+  logger: wandb
+  log_samples: false
+  save_per_updates: 10000
+  keep_last_n_checkpoints: -1
+  last_per_updates: 10000
+  exp_name: WaveGen_VSpec_Train
+  save_dir: ckpts/${ckpts.exp_name}

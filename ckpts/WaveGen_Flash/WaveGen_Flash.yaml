@@ -1,0 +1,48 @@
+# Complete EMA model; inference only.
+model:
+  name: WaveGen_Flash
+  tokenizer: pinyin
+  backbone: DiT
+  cfm:
+    prediction: x_pred
+    t_eps: 0.02
+    latents_scale: 9.0
+  arch:
+    dim: 1152
+    depth: 24
+    heads: 16
+    dropout: 0.0
+    ff_mult: 4
+    text_dim: 512
+    text_mask_padding: true
+    qk_norm: null
+    conv_layers: 4
+    pe_attn_head: null
+    attn_backend: torch
+    attn_mask_enabled: false
+    checkpoint_activations: false
+    mel_channels: 80
+    use_mel_information_bottleneck: true
+    mel_bottleneck_dim: 32
+    mel_bottleneck_dropout: 0.2  # Disabled explicitly by inference_bottleneck_dropout below.
+    mel_bottleneck_zero_init: false
+    use_audio_proj: true
+    audio_proj_dim: 1024
+    audio_proj_hidden: 2048
+  waveform:
+    target_sample_rate: 24000
+    wav_frame_len: 480
+
+inference:
+  num_steps: 4
+  sampling_method: euler
+  time_shift: 3.0
+  # Already shifted: t / (t + 3 * (1 - t)), from [0, .25, .5, .75, 1].
+  # Use these exact evaluation times; do not apply another time transform.
+  time_grid: [0.0, 0.1, 0.25, 0.5, 1.0]
+  cfg_strength: 0.0
+  inference_bottleneck_dropout: 0.0
+  waveform_temperature: 1.0
+  mel_temperature: 1.0
+  compute_final_mel: false
+  max_duration_seconds: 30.0

@@ -1,0 +1,43 @@
+# Paths are relative to the WaveGen repository root (the working directory).
+# Supply the dataset and local metric assets, then run with --full-eval.
+# CLI flags override these settings. --config remains the model YAML option.
+
+[inference]
+checkpoint = "ckpts/WaveGen_VSpec/model_1400000.safetensors"
+vocab_file = "ckpts/WaveGen_VSpec/vocab.txt"
+# config = "src/wavegen_v_spec/configs/WaveGen_VSpec.yaml"
+dataset = "seedtts"
+meta = "data/seedtts_testset/en/meta.lst"
+output_dir = "results/WaveGen_VSpec/1400000/seedtts_test_en"
+# For dataset = "librispeech":
+# meta = "data/librispeech_pc_test_clean_cross_sentence.lst"
+# librispeech_test_clean_path = "data/LibriSpeech/test-clean"
+conditions = "scheduled_k3"
+inference_method = "Prompt_xt_Anchor"
+steps = 50
+cfg_strength = 3.0
+scheduled_cfg_strength = 1.25
+seed = 0
+speed = 1.0
+max_duration_frames = 4096  # Use 5120 for the full Seed-TTS ZH hardcase.lst.
+mel_temperature = 0.0
+compute_final_mel = false  # Skip the unused final-step Mel output head.
+inference_dropout = 0.2
+dtype = "bf16"
+# device = "cuda:0"  # Omit to select CUDA when available, otherwise CPU.
+num_threads = 1
+no_ema = false
+
+[evaluation]
+mode = "infer-only"
+eval_task = "all"
+lang = "en"
+eval_device = "cpu"  # Change to "cuda:0" for GPU scoring.
+asr_model = "ckpts/metrics/faster-whisper-large-v3"
+# For lang = "zh", supply the local Paraformer-zh model directory instead.
+# asr_compute_type = "float16"
+s3prl_repo = "ckpts/metrics/s3prl"
+wavlm_checkpoint = "ckpts/metrics/wavlm_large.pt"
+sim_checkpoint = "ckpts/metrics/wavlm_large_finetune.pth"
+utmos_repo = "ckpts/metrics/SpeechMOS"
+utmos_checkpoint = "ckpts/metrics/utmos22_strong_step7459_v1.pt"
