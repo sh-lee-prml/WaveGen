@@ -24,15 +24,14 @@
 
 ## Abstract
 
-This work proposes WaveGen, a fully end-to-end diffusion-based text-to-waveform framework based on Spectral Forcing, which jointly learns an internal spectral trajectory and the target waveform trajectory within a single model, enabling direct end-to-end text-to-waveform generation. Unlike recent TTS pipelines, WaveGen does not rely on separately trained or externally decoded intermediate representations, such as neural audio codecs, Mel-spectrogram vocoders, or VAE-based latent models. In addition, WaveGen performs internal text-speech alignment within a single model, eliminating the need for external alignment modules such as duration predictors. To preserve a truly end-to-end formulation, our framework further avoids dependence on self-supervised representations, such as BERT-based text embeddings and Wav2Vec 2.0-based semantic representations, as well as semantic distillation methods for training optimization. To achieve this, we carefully design Spectral Forcing, a model architecture with disentangled diffusion heads, and a training objective based on a multi-scale spectral *v*-loss. We further validate the scalability of end-to-end TTS models by scaling the model size from 0.1B to 0.6B parameters. Using a single architecture, open-source data, and one-stage training, without external modules such as duration predictor or REPA, WaveGen demonstrates fully end-to-end waveform generation achieving state-of-the-art performance on the Emilia training dataset. In particular, WaveGen achieves a WER of 1.47 and a SIM of 0.75 on the Seed-en benchmark. Source code and checkpoints are available at <https://github.com/sh-lee-prml/WaveGen>.
+This work proposes WaveGen, a fully end-to-end diffusion-based text-to-waveform framework based on Spectral Forcing, which jointly learns an internal spectral trajectory and the target waveform trajectory within a single model, enabling direct end-to-end text-to-waveform generation. Unlike recent TTS pipelines, WaveGen does not rely on separately trained or externally decoded intermediate representations, such as neural audio codecs, Mel-spectrogram vocoders, or VAE-based latent models. In addition, WaveGen performs internal text-speech alignment within a single model, eliminating the need for external alignment modules such as duration predictors. To preserve a truly end-to-end formulation, our framework further avoids dependence on self-supervised representations, such as BERT-based text embeddings and Wav2Vec 2.0-based semantic representations, as well as semantic distillation methods for training optimization. To achieve this, we carefully design Spectral Forcing, a model architecture with disentangled diffusion heads, and a training objective based on a multi-scale spectral *v*-loss. We further validate the scalability of end-to-end TTS models by scaling the model size from 0.1B to 0.6B parameters. Using a single architecture, open-source data, and one-stage training, without external modules such as duration predictor or REPA, WaveGen demonstrates fully end-to-end waveform generation achieving state-of-the-art performance on the Emilia training dataset. In particular, WaveGen achieves a WER of 1.47 and a SIM of 0.75 on the Seed-en benchmark.
 
 <div align="center">
   <a href="docs/static/images/wavegen_fig.pdf">
     <img src="docs/static/images/wavegen_fig.png" alt="Figure 1 from the WaveGen paper: Spectral Forcing and disentangled waveform and spectral diffusion heads." width="100%">
   </a>
 </div>
-
-**Figure 1. WaveGen training framework** ([original PDF](docs/static/images/wavegen_fig.pdf)). Spectral Forcing provides internal spectral guidance. Shared DiT blocks align text and speech, while separate waveform and spectral heads predict the two trajectories. Training combines waveform and spectral *v*-losses with a multi-scale spectral *v*-loss.
+**Figure 1. WaveGen training framework** 
 
 Listen to speech samples on the [WaveGen demo page](https://wavegen26.github.io/demo).
 
@@ -44,8 +43,8 @@ Listen to speech samples on the [WaveGen demo page](https://wavegen26.github.io/
 
 ### 26.11.10
 
-- We will release the WaveGen source code and checkpoint trained on Emilia (24 kHz audio, 50 Hz waveform patches).
-- Three models are planned for release: **WaveGen**, **WaveGen (Fine-tuned with v-spec losses)**, and **WaveGen-Flash (4 Steps)**.
+- We released the WaveGen source code and checkpoint trained on Emilia (24 kHz audio, 50 Hz waveform patches).
+- **WaveGen**, **WaveGen (Fine-tuned with v-spec losses)**, and **WaveGen-Flash (4 Steps)**.
  
 ### 26.09.24
 
