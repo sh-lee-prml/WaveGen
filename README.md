@@ -259,9 +259,9 @@ should add appropriate access controls, abuse reporting, and review of suspected
 misuse.
 
 ## Reference
-- PeriodWave [ICLR 2025]
-- FlowTokenizer [ACL Findings 2026] 
-- ReGen [ICML 2026]
+- PeriodWave [ICLR 2025]: The first CFM-based waveform generation model
+- FlowTokenizer [ACL Findings 2026]: The first CFM-based neural audio codec model 
+- ReGen [ICML 2026]: The first CFM-based audio VAE model
 - F5-TTS [ACL 2025]
 - WavTTS 
 
