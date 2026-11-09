@@ -11,11 +11,6 @@
 
   <p><strong>Sang-Hoon Lee<sup>1,*</sup> and Ha-Yeong Choi<sup>2,*</sup></strong></p>
   <p>
-    <img src="docs/static/images/logos/ajou-university.png" alt="Ajou University" height="40">
-    &nbsp;&nbsp;&nbsp;&nbsp;
-    <img src="docs/static/images/logos/kt.png" alt="KT" height="40">
-  </p>
-  <p>
     <sup>1</sup>Department of Artificial Intelligence, Ajou University, Suwon, Korea<br>
     <sup>2</sup>Frontier AI Lab, KT Corp., Seoul, Korea<br>
   </p>
