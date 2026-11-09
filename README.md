@@ -79,11 +79,57 @@ Results on the complete Seed-en (1,088 utterances) and Seed-zh (2,020 utterances
 test sets. WaveGen and V-Spec use 50 Euler steps; WaveGen-Flash uses four Euler
 steps. All three models use Mel temperature 0.
 
-| Model | EN WER (%) ↓ | EN SIM ↑ | EN UTMOS ↑ | ZH CER (%) ↓ | ZH SIM ↑ | ZH UTMOS ↑ |
-|---|---:|---:|---:|---:|---:|---:|
-| WaveGen (Pre-trained, 1300k EMA) | 1.47 | 0.755 | 3.68 | 1.75 | 0.805 | 2.87 |
-| **WaveGen V-Spec (1400k EMA)** | 1.39 | 0.743 | 3.59 | 1.65 | 0.783 | 2.79 |
-| WaveGen-Flash (48k EMA, 4 steps) | 1.49 | 0.727 | 3.53 | 1.59 | 0.768 | 2.74 |
+<table>
+  <colgroup span="1"></colgroup>
+  <colgroup span="3"></colgroup>
+  <colgroup span="3"></colgroup>
+  <thead>
+    <tr>
+      <th rowspan="2" scope="col" align="left">Model</th>
+      <th colspan="3" scope="colgroup" align="center">EN</th>
+      <th colspan="3" scope="colgroup" align="center">ZH</th>
+    </tr>
+    <tr>
+      <th scope="col" align="center">WER (%) ↓</th>
+      <th scope="col" align="center">SIM ↑</th>
+      <th scope="col" align="center">UTMOS ↑</th>
+      <th scope="col" align="center">CER (%) ↓</th>
+      <th scope="col" align="center">SIM ↑</th>
+      <th scope="col" align="center">UTMOS ↑</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th scope="row" align="left"><strong>WaveGen</strong><br><sub>Pre-trained · 1300k EMA</sub></th>
+      <td align="center">1.47</td>
+      <td align="center">0.755</td>
+      <td align="center">3.68</td>
+      <td align="center">1.75</td>
+      <td align="center">0.805</td>
+      <td align="center">2.87</td>
+    </tr>
+    <tr>
+      <th scope="row" align="left"><strong>WaveGen V-Spec</strong><br><sub>1400k EMA · Recommended</sub></th>
+      <td align="center">1.39</td>
+      <td align="center">0.743</td>
+      <td align="center">3.59</td>
+      <td align="center">1.65</td>
+      <td align="center">0.783</td>
+      <td align="center">2.79</td>
+    </tr>
+    <tr>
+      <th scope="row" align="left"><strong>WaveGen-Flash</strong><br><sub>48k EMA · 4 steps</sub></th>
+      <td align="center">1.49</td>
+      <td align="center">0.727</td>
+      <td align="center">3.53</td>
+      <td align="center">1.59</td>
+      <td align="center">0.768</td>
+      <td align="center">2.74</td>
+    </tr>
+  </tbody>
+</table>
+
+**WaveGen achieves state-of-the-art performance among TTS models trained on the Emilia dataset.**
 
 WER/CER and UTMOS are displayed to two decimal places, and SIM to three, with
 excess digits truncated rather than rounded. See the
