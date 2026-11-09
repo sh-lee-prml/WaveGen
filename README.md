@@ -258,6 +258,13 @@ These are usage guidelines, not automatic safety filters. Public-facing services
 should add appropriate access controls, abuse reporting, and review of suspected
 misuse.
 
+## Reference
+- PeriodWave [ICLR 2025]
+- FlowTokenizer [ACL Findings 2026] 
+- ReGen [ICML 2026]
+- F5-TTS [ACL 2025]
+- WavTTS 
+
 ## License
 
 WaveGen source-code contributions are Copyright (c) 2026 Sang-Hoon Lee and
