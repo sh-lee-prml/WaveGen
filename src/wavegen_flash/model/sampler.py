@@ -1,11 +1,20 @@
 """Inference-only generator and fixed four-step Euler sampler."""
 
+import math
+from numbers import Real
+
 import torch
 from torch import nn
 from torch.nn import functional as F
 
 from wavegen_v_spec.model.mel_spectrogram import TorchMel
 from wavegen_v_spec.model.utils import list_str_to_idx
+
+
+def validate_mel_temperature(value):
+    if isinstance(value, bool) or not isinstance(value, Real) or not math.isfinite(value) or value < 0:
+        raise ValueError("mel_temperature must be finite and nonnegative")
+    return float(value)
 
 
 class FlashModel(nn.Module):
@@ -70,7 +79,8 @@ class FlashSampler:
         )
 
     @torch.no_grad()
-    def generate(self, wav, text, lengths, mask, *, compute_final_mel=False):
+    def generate(self, wav, text, lengths, mask, *, compute_final_mel=False, mel_temperature=0.0):
+        mel_temperature = validate_mel_temperature(mel_temperature)
         if not isinstance(compute_final_mel, bool):
             raise ValueError("compute_final_mel must be a boolean")
         model = self.model.eval()
@@ -99,9 +109,12 @@ class FlashSampler:
         if not torch.is_tensor(text):
             text = list_str_to_idx(text, model.vocab_char_map).to(wav.device)
 
-        # Both initial states use unit Gaussian noise. The clean reference is
-        # interpolated from these same draws at every model evaluation.
+        # Draw both noises even at temperature zero to preserve RNG consumption.
+        # Scale only the initial Mel noise, including its prompt-anchor copy;
+        # clean prompt Mel and later predicted states keep their original scale.
         initial = (torch.randn_like(clean_wav), torch.randn_like(clean_mel))
+        if mel_temperature != 1.0:
+            initial = (initial[0], initial[1] * mel_temperature)
         state = initial
         for step in range(self.num_steps):
             t = self.time_grid[step]

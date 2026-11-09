@@ -39,6 +39,8 @@ def add_model_options(parser):
 def add_sampling_options(parser):
     parser.add_argument("--seed", type=int, default=0)
     parser.add_argument("--speed", type=float, default=1.0)
+    parser.add_argument("--mel-temperature", type=float,
+                        help="Initial Mel noise scale; default comes from the model YAML (0); use 1 for the previous setting")
     parser.add_argument("--max-duration-seconds", type=float,
                         help="Prompt plus generated audio limit; default comes from the model YAML (30 seconds)")
     parser.add_argument("--num-threads", "--num_threads", type=int, default=1)
@@ -59,6 +61,10 @@ def validate_options(args):
         raise ValueError("--seed must be in [0, 2**63)")
     if not math.isfinite(args.speed) or args.speed <= 0:
         raise ValueError("--speed must be finite and positive")
+    if args.mel_temperature is not None and (
+        isinstance(args.mel_temperature, bool) or not math.isfinite(args.mel_temperature) or args.mel_temperature < 0
+    ):
+        raise ValueError("--mel-temperature must be finite and nonnegative")
     if args.max_duration_seconds is not None and (
         not math.isfinite(args.max_duration_seconds) or args.max_duration_seconds <= 0
     ):
@@ -122,7 +128,8 @@ def main(argv=None):
             print(f"Model revision: {engine.hub_repo_id}@{engine.hub_revision}")
         sample_rate, waveform = engine.synthesize(
             args.ref_audio, args.ref_text, text, seed=args.seed, speed=args.speed,
-            max_duration_seconds=args.max_duration_seconds, compute_final_mel=args.compute_final_mel)
+            max_duration_seconds=args.max_duration_seconds, compute_final_mel=args.compute_final_mel,
+            mel_temperature=args.mel_temperature)
         output.parent.mkdir(parents=True, exist_ok=True)
         sf.write(output, waveform, sample_rate, subtype=args.audio_subtype)
     except (ValueError, OSError) as error:

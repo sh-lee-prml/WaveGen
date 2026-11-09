@@ -41,6 +41,9 @@ loading it requires only its YAML and vocabulary, with no additional base model.
 Use `python -m wavegen_flash.infer.infer_cli` for its fixed four-step sampler.
 The Flash loader accepts Safetensors only. Its configuration specifies Euler
 steps at `[0, 0.1, 0.25, 0.5]`, ending at 1.0, CFG 0, and IB dropout 0.
+Waveform temperature stays at 1; initial Mel temperature defaults to 0 in the
+YAML. Use `--mel-temperature 1` to reproduce the previous initialization with
+the same weights. The final Mel output head remains skipped by default.
 See the [Flash guide](../src/wavegen_flash/README.md).
 
 For the default CLI, use `--ckpt_file`, `--vocab_file`, and `--model_cfg` to

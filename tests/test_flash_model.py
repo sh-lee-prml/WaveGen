@@ -65,7 +65,9 @@ def tiny_bundle(tmp_path):
     ('time_grid', [0.0, 0.25, 0.5, 0.75, 1.0]),
     ('time_grid', [False, 0.1, 0.25, 0.5, True]),
     ('cfg_strength', 1.25), ('inference_bottleneck_dropout', 0.2),
-    ('waveform_temperature', 0.0), ('mel_temperature', 0.0),
+    ('waveform_temperature', 0.0), ('mel_temperature', -0.1),
+    ('mel_temperature', True), ('mel_temperature', '0'),
+    ('mel_temperature', float('nan')), ('mel_temperature', float('inf')),
     ('compute_final_mel', 'false'), ('max_duration_seconds', float('nan')),
 ])
 def test_flash_config_rejects_untrained_sampling_settings(tmp_path, field, value):
@@ -77,7 +79,8 @@ def test_flash_config_rejects_untrained_sampling_settings(tmp_path, field, value
         read_config(config)
 
 
-def test_flash_sampler_anchors_and_noise_consumption():
+@pytest.mark.parametrize('temperature', [0.0, 0.5, 1.0])
+def test_flash_sampler_anchors_and_noise_consumption(temperature):
     model = tiny_model()
     sampler = FlashSampler(model, GRID)
     wav = torch.randn(2, 3847) * 0.1
@@ -95,17 +98,25 @@ def test_flash_sampler_anchors_and_noise_consumption():
     clean_mel = model._mel_from_wav(raw, 9).masked_fill(~mel_valid[..., None], 0)
     torch.manual_seed(17)
     noise_wav, noise_mel = torch.randn_like(clean_wav), torch.randn_like(clean_mel)
+    noise_mel = noise_mel * temperature
     expected_rng = torch.get_rng_state().clone()
     calls = []
+    predictions = []
     def capture(_module, _args, kwargs):
         calls.append({key: value.detach().clone() if torch.is_tensor(value) else value
                       for key, value in kwargs.items()})
     handle = model.transformer.register_forward_pre_hook(capture, with_kwargs=True)
+    output_handle = model.transformer.register_forward_hook(
+        lambda _module, _args, output: predictions.append(
+            tuple(value.detach().clone() if torch.is_tensor(value) else value for value in output[0])))
     try:
         torch.manual_seed(17)
-        out, mel = sampler.generate(wav, torch.tensor([[1, 2], [1, 3]]), lengths, mask)
+        # Omission exercises the sampler's public zero-temperature default.
+        options = {} if temperature == 0 else {'mel_temperature': temperature}
+        out, mel = sampler.generate(wav, torch.tensor([[1, 2], [1, 3]]), lengths, mask, **options)
     finally:
         handle.remove()
+        output_handle.remove()
     assert len(calls) == 4 and mel is None
     assert torch.equal(torch.get_rng_state(), expected_rng)
     for index, call in enumerate(calls):
@@ -117,8 +128,14 @@ def test_flash_sampler_anchors_and_noise_consumption():
         assert torch.equal(call['x'][known], ((1 - t) * noise_wav + t * clean_wav)[known])
         known_mel = mel_known[..., None].expand_as(clean_mel)
         assert torch.equal(call['mel'][known_mel], ((1 - t) * noise_mel + t * clean_mel)[known_mel])
+        assert torch.equal(call['mel_cond'], clean_mel.masked_fill(~mel_known[..., None], 0))
         assert torch.count_nonzero(call['x'][~valid]) == 0
         assert torch.count_nonzero(call['mel'][~mel_valid]) == 0
+    assert torch.equal(calls[0]['mel'], noise_mel.masked_fill(~mel_valid[..., None], 0))
+    generated_mel = (mel_valid & ~mel_known)[..., None].expand_as(clean_mel)
+    # The next predicted Mel state is evolved normally, not scaled again.
+    expected_next = noise_mel + 0.1 * (predictions[0][1].float() - noise_mel)
+    assert torch.equal(calls[1]['mel'][generated_mel], expected_next[generated_mel])
     assert torch.equal(out[known], (clean_wav / model.latents_scale)[known])
     assert torch.count_nonzero(out[~valid]) == 0
 
@@ -132,6 +149,7 @@ def test_flash_complete_ema_load_and_final_head_invariance(tiny_bundle, tmp_path
     for key, expected in model.state_dict().items():
         assert torch.equal(engine.model.state_dict()[key].view(torch.uint8), expected.view(torch.uint8))
     assert engine.num_steps == 4 and engine.sampler.time_grid == tuple(GRID)
+    assert engine.settings['mel_temperature'] == 0.0
     assert all(not parameter.requires_grad for parameter in engine.model.parameters())
     prompt = tmp_path / 'reference.wav'
     sf.write(prompt, np.sin(np.arange(3840) * 2 * np.pi * 220 / 24000).astype(np.float32) * 0.12,
@@ -154,8 +172,40 @@ def test_flash_complete_ema_load_and_final_head_invariance(tiny_bundle, tmp_path
             handle.remove()
     assert rate == skipped_rate == 24000 and np.array_equal(full, skipped)
     assert torch.equal(torch.get_rng_state(), initial_rng)
+    _, legacy = engine.synthesize(prompt, 'a b.', 'a c.', seed=19, mel_temperature=1.0)
+    assert not np.array_equal(legacy, skipped)
+    assert engine.settings['mel_temperature'] == 0.0
+    assert torch.equal(torch.get_rng_state(), initial_rng)
+    engine.settings['mel_temperature'] = 1.0
+    _, configured = engine.synthesize(prompt, 'a b.', 'a c.', seed=19)
+    assert np.array_equal(configured, legacy)
+    _, overridden = engine.synthesize(prompt, 'a b.', 'a c.', seed=19, mel_temperature=0.0)
+    assert np.array_equal(overridden, skipped)
     with pytest.raises(TypeError):
         engine.synthesize(prompt, 'a b.', 'a c.', steps=8)
+
+
+@pytest.mark.parametrize('temperature', [0.0, 0.5, 1.0, 2.0])
+def test_flash_config_accepts_initial_mel_temperature(tmp_path, temperature):
+    document = OmegaConf.load(str(files('wavegen_flash').joinpath('configs/WaveGen_Flash.yaml')))
+    document.inference.mel_temperature = temperature
+    config = tmp_path / 'config.yaml'
+    OmegaConf.save(document, config)
+    assert read_config(config)[1]['mel_temperature'] == temperature
+
+
+@pytest.mark.parametrize('temperature', [-0.1, True, '0', float('nan'), float('inf')])
+def test_flash_sampler_rejects_invalid_mel_temperature(temperature):
+    sampler = FlashSampler(None, GRID)
+    with pytest.raises(ValueError, match='mel_temperature'):
+        sampler.generate(None, None, None, None, mel_temperature=temperature)
+
+
+@pytest.mark.parametrize('temperature', [-0.1, True, '0', float('nan'), float('inf')])
+def test_flash_api_rejects_invalid_mel_temperature(temperature):
+    engine = WaveGenFlash()
+    with pytest.raises(ValueError, match='mel_temperature'):
+        engine.synthesize(None, '', '', mel_temperature=temperature)
 
 
 @pytest.mark.parametrize('damage', ['metadata', 'missing', 'extra', 'dtype', 'prefix', 'shape', 'pt'])

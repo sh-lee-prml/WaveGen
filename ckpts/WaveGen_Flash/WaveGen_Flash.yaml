@@ -43,6 +43,7 @@ inference:
   cfg_strength: 0.0
   inference_bottleneck_dropout: 0.0
   waveform_temperature: 1.0
-  mel_temperature: 1.0
+  # Initial Mel noise only; use 1.0 to reproduce the previous setting.
+  mel_temperature: 0.0
   compute_final_mel: false
   max_duration_seconds: 30.0

@@ -39,7 +39,7 @@ licenses and third-party notices remain as documented in the repository root.
 | Time shift | 3, already reflected in the grid |
 | CFG strength | 0 |
 | Inference bottleneck dropout | 0 |
-| Waveform / Mel temperature | 1 / 1 |
+| Waveform / initial Mel temperature | 1 / 0 (default) |
 | Final Mel output head | Skipped by default |
 | Default seed | 0 |
 | Default duration limit | 30 seconds, including the prompt |
@@ -50,8 +50,28 @@ anchors the prompt states to their interpolation between the initial noise and
 the reference at every call, then applies the explicit Euler update.
 
 The released model fixes its step count, time grid, CFG, and dropout. The CLI
-does not expose overrides for those settings. Seed, speed, duration limit, and
-the optional final Mel computation can be selected per synthesis request.
+does not expose overrides for those settings. Seed, speed, initial Mel
+temperature, duration limit, and the optional final Mel computation can be
+selected per synthesis request.
+
+### Initial Mel temperature
+
+The supplied YAML sets `mel_temperature: 0.0`. This parameter scales only the
+initial Gaussian Mel noise: the initial Mel state is zero at temperature 0,
+while waveform noise retains temperature 1. It does not scale the clean
+reference Mel or subsequent Mel predictions. Prompt Anchor uses the same
+scaled initial noise when interpolating toward the reference at every step.
+Both Gaussian draws are still made at temperature 0, preserving random-number
+consumption for the same seed.
+
+Use `--mel-temperature 1` with either the single-utterance or batch CLI to
+reproduce the previous initialization. The Python equivalent is
+`model.synthesize(..., mel_temperature=1.0)`. Omitting the override uses the
+YAML value; temperatures must be finite and nonnegative.
+
+In the Gradio demo, selecting **WaveGen-Flash** sets **Mel temperature** to 0.
+The slider remains editable from 0 to 1; step count, time grid, CFG, and dropout
+remain fixed for Flash.
 
 Skipping the final Mel DDT, output normalization, and projection leaves the
 waveform calculation unchanged. The Mel input, information bottleneck, shared
@@ -137,6 +157,8 @@ This command performs inference only and writes a generation manifest. It
 checks checkpoint, configuration, vocabulary, metadata, source, and sampling
 settings before reusing existing outputs. For LibriSpeech-PC, use
 `--dataset librispeech` with its metadata and `--librispeech-test-clean-path`.
+The manifest records the effective Mel temperature, so results generated with
+a different temperature cannot be reused as the current run.
 
 Use the existing WaveGen metric tools to score the generated WAVs. For example,
 with a locally available English ASR model:
@@ -152,3 +174,22 @@ python -m wavegen_v_spec.eval.eval_seedtts_testset \
 See the [evaluation guide](../wavegen_v_spec/eval/README.md) for the metric-model
 requirements. Use `--lang zh` with the matching Chinese metadata and Paraformer
 model for CER. No metric assets are bundled with the Flash checkpoint.
+
+### Initial Mel temperature comparison
+
+The following complete Seed-TTS evaluations use the same 48k EMA weights,
+four-step schedule, original test prompts, seed 0, FP32 weights, and BF16 CUDA
+inference. Only the initial Mel temperature changes. Values are copied from
+the evaluation output without rounding; error rates are percentages and all
+metrics are macro-averaged over utterances.
+
+| Test set | Initial Mel temperature | WER / CER (%) ↓ | SIM ↑ | UTMOS ↑ |
+|---|---:|---:|---:|---:|
+| Seed-en (1,088 utterances) | 1 | 1.6212736915861916 | 0.7249332501498216 | 3.478904302615453 |
+| Seed-en (1,088 utterances) | **0 (default)** | **1.491869968026975** | **0.7271562968380749** | **3.5315547175705433** |
+| Seed-zh (2,020 utterances) | 1 | 1.8466378780742656 | 0.7659791491114267 | 2.6918433814355645 |
+| Seed-zh (2,020 utterances) | **0 (default)** | **1.598314219197795** | **0.7682562217854038** | **2.7408872486931264** |
+
+Initial Mel temperature 0 improves all three metrics over temperature 1 on
+both test sets. It is the new inference default; the checkpoint weights and
+the final Mel output-head skipping behavior are unchanged.

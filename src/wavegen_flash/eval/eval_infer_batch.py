@@ -48,6 +48,8 @@ def run(args, *, engine_class=None, audio_writer=None):
                  else args.compute_final_mel)
     duration_limit = (engine.settings["max_duration_seconds"] if args.max_duration_seconds is None
                       else args.max_duration_seconds)
+    mel_temperature = (engine.settings["mel_temperature"] if args.mel_temperature is None
+                       else args.mel_temperature)
     contract = {
         "schema": "wavegen_flash.inference.v1", "model": "WaveGen-Flash",
         "checkpoint": file_identity(engine.checkpoint),
@@ -59,7 +61,7 @@ def run(args, *, engine_class=None, audio_writer=None):
                                         if args.librispeech_test_clean_path else None),
         "execution": execution, "device": str(engine.device), "dtype": str(engine.dtype),
         "sampler": dict(engine.settings, compute_final_mel=final_mel,
-                        max_duration_seconds=duration_limit),
+                        max_duration_seconds=duration_limit, mel_temperature=mel_temperature),
         "seed": args.seed, "speed": args.speed, "wav_subtype": "PCM_16",
         "scope": "all metadata rows",
     }
@@ -84,7 +86,8 @@ def run(args, *, engine_class=None, audio_writer=None):
         for index, item in enumerate(items, 1):
             sample_rate, waveform = engine.synthesize(
                 str(item.ref_audio), item.ref_text, item.text, seed=args.seed, speed=args.speed,
-                max_duration_seconds=duration_limit, compute_final_mel=final_mel)
+                max_duration_seconds=duration_limit, compute_final_mel=final_mel,
+                mel_temperature=mel_temperature)
             audio_writer(output / f"{item.utt}.wav", waveform, sample_rate)
             print(f"WaveGen-Flash: {index}/{len(items)} {item.utt}", flush=True)
         if file_identity(engine.checkpoint) != contract["checkpoint"]:

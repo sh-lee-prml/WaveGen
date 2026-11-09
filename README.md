@@ -178,8 +178,11 @@ python -m wavegen_flash.infer.infer_cli \
 
 Flash uses **four Euler steps** with the time grid **`[0, 0.1, 0.25, 0.5, 1.0]`**,
 CFG 0, and inference bottleneck dropout 0. The matching YAML stores the complete
-sampling settings, including waveform and Mel temperatures of 1. The final Mel
-output head is skipped by default. The Safetensors file contains the complete
+sampling settings, with waveform temperature 1 and **initial Mel temperature 0**.
+Mel temperature scales only the initial Mel noise; reference conditioning and
+later Mel predictions remain active. Use `--mel-temperature 1` to reproduce the
+previous initialization. The final Mel output head is skipped by default.
+The Safetensors file contains the complete
 merged EMA model; no separate base checkpoint is needed. This release includes
 inference code and weights; the Flash training recipe is not included.
 

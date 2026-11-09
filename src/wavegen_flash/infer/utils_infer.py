@@ -18,6 +18,7 @@ from wavegen_v_spec.infer.utils_infer import _local_file, _prepare_prompt, _read
 from wavegen_v_spec.model.backbones.dit import DiT
 from wavegen_v_spec.model.utils import convert_char_to_pinyin
 from wavegen_flash.model import FlashModel, FlashSampler
+from wavegen_flash.model.sampler import validate_mel_temperature
 
 
 def read_config(path):
@@ -29,13 +30,13 @@ def read_config(path):
         raise ValueError("model and inference must be YAML mappings")
     expected = dict(num_steps=4, sampling_method="euler", time_shift=3.0,
                     time_grid=[0.0, 0.1, 0.25, 0.5, 1.0], cfg_strength=0.0,
-                    inference_bottleneck_dropout=0.0, waveform_temperature=1.0,
-                    mel_temperature=1.0)
-    if set(settings) != set(expected) | {"compute_final_mel", "max_duration_seconds"}:
+                    inference_bottleneck_dropout=0.0, waveform_temperature=1.0)
+    if set(settings) != set(expected) | {"compute_final_mel", "max_duration_seconds", "mel_temperature"}:
         raise ValueError("Unexpected or missing Flash inference settings")
     for key, value in expected.items():
         if isinstance(settings[key], bool) or settings[key] != value:
             raise ValueError(f"WaveGen-Flash requires {key}={value}")
+    settings["mel_temperature"] = validate_mel_temperature(settings["mel_temperature"])
     if type(settings['num_steps']) is not int:
         raise ValueError("num_steps must be the integer 4")
     if any(isinstance(t, bool) for t in settings['time_grid']):
@@ -131,8 +132,10 @@ class WaveGenFlash:
         return instance
 
     def synthesize(self, ref_audio, ref_text, text, *, seed=0, speed=1.0,
-                   max_duration_seconds=None, compute_final_mel=None):
-        """Return (24000, mono float32 waveform) using the fixed four-step grid."""
+                   max_duration_seconds=None, compute_final_mel=None, mel_temperature=None):
+        """Return (24000, mono float32 waveform); initial Mel temperature defaults to the YAML."""
+        mel_temperature = validate_mel_temperature(
+            self.settings["mel_temperature"] if mel_temperature is None else mel_temperature)
         if isinstance(seed, bool) or not isinstance(seed, int) or not 0 <= seed < 2**63:
             raise ValueError("seed must be an integer in [0, 2**63)")
         if max_duration_seconds is None:
@@ -166,7 +169,9 @@ class WaveGenFlash:
                     torch.cuda.manual_seed(seed)
             self.model.transformer.clear_cache()
             try:
-                generated, _ = self.sampler.generate(wav, texts, lengths, mask, compute_final_mel=compute_final_mel)
+                generated, _ = self.sampler.generate(
+                    wav, texts, lengths, mask, compute_final_mel=compute_final_mel,
+                    mel_temperature=mel_temperature)
                 waveform = generated[0, prompt_length:predicted_length].float().cpu()
                 if rms < 0.1:
                     waveform = waveform * rms / 0.1

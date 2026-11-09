@@ -65,7 +65,7 @@ class Synthesizer:
             raise gr.Error("Select WaveGen V-Spec or WaveGen-Flash.")
         if model_variant == "Flash":
             inference_method, cfg_schedule = "Prompt_xt_Anchor", "constant"
-            cfg_strength, steps, mel_temperature = 0.0, 4, 1.0
+            cfg_strength, steps = 0.0, 4
         if not ref_audio or not Path(ref_audio).is_file():
             raise gr.Error("Upload or record reference speech first.")
         if not isinstance(ref_text, str) or not ref_text.strip():
@@ -132,7 +132,7 @@ class Synthesizer:
                 common = dict(ref_audio=ref_audio, ref_text=ref_text, text=text,
                               seed=seed, speed=speed, compute_final_mel=compute_final_mel)
                 if model_variant == "Flash":
-                    sample_rate, waveform = self.engine.synthesize(**common)
+                    sample_rate, waveform = self.engine.synthesize(**common, mel_temperature=mel_temperature)
                 else:
                     sample_rate, waveform = self.engine.synthesize(
                         **common, inference_method=inference_method, cfg_schedule=cfg_schedule,
@@ -154,7 +154,7 @@ class Synthesizer:
                 raise gr.Error(f"Generation failed: {exc}") from exc
         elapsed = time.perf_counter() - started
         if model_variant == "Flash":
-            return str(output_path), f"WaveGen-Flash · 4 steps · seed {seed} · {elapsed:.1f}s"
+            return str(output_path), f"WaveGen-Flash · 4 steps · Mel temp {mel_temperature:g} · seed {seed} · {elapsed:.1f}s"
         method_label = "Prompt Anchor" if inference_method == "Prompt_xt_Anchor" else "Baseline"
         return str(output_path), f"{method_label} · {cfg_schedule} · CFG {cfg_strength:g} · seed {seed} · {elapsed:.1f}s"
 
@@ -171,7 +171,7 @@ def model_defaults(model_variant):
         gr.update(value=4 if flash else 50, interactive=not flash),
         gr.update(value="constant" if flash else "scheduled_k3", interactive=not flash),
         gr.update(value=0.0 if flash else 1.25, interactive=not flash),
-        gr.update(value=1.0 if flash else 0.0, interactive=not flash),
+        gr.update(value=0.0, interactive=True),
         gr.update(value="Prompt_xt_Anchor", interactive=not flash),
     )
 
