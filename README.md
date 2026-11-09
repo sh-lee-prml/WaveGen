@@ -28,7 +28,7 @@
 
 ## GPU Sponsorship
 
-We welcome GPU resources to support the continued development of WaveGen. If you are interested in supporting this work, please contact [Sang-Hoon Lee](mailto:sanghoonlee@ajou.ac.kr).
+We welcome GPU resources to support the continued development of WaveGen. If you are interested in supporting this work, please contact Sang-Hoon Lee (sanghoonlee@ajou.ac.kr).
 
 ## Update
 
