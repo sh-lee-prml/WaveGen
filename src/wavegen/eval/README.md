@@ -317,26 +317,3 @@ EN `uttid_43` retained its original prompt because trimming returned empty
 audio. Very quiet prompts can also be over-trimmed without becoming empty:
 EN `uttid_45` was reduced to about 0.30 s and ZH `uttid_60` to about 0.97 s.
 Text splitting alone does not repair these shortened prompts.
-
-#### Selected low-volume pilot
-
-This is a **selected subset, not a full-set benchmark**: the six quietest
-original prompts with RMS below 0.01 per language, plus one normal-volume
-control per language. Selection used input audio statistics only. The table
-below includes only the six quiet samples in each language.
-
-| Condition | EN WER (%), n=6 ↓ | ZH CER (%), n=6 ↓ |
-| --- | ---: | ---: |
-| Trimmed Prompts + chunk30 (baseline) | 41.87 | 5.86 |
-| Output gain only | 39.61 | 5.86 |
-| Prompt gain before trimming + output peak protection | 13.67 | 18.71 |
-
-Gain targeted RMS 0.1 with a peak limit of 0.95. In the prompt-gain condition,
-gain was applied before trimming and inference; a single output gain across
-all segments prevented PCM clipping before concatenation. The normal-volume
-controls retained identical PCM and scores.
-
-Prompt gain improved the EN subset but worsened the ZH subset. It also changes
-which speech survives trimming, the duration estimate, and sometimes the number
-of generated segments, so this does not isolate an amplitude-only effect.
-These results do **not** support enabling extra gain for every quiet prompt.
