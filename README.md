@@ -73,6 +73,23 @@ Download the selected model's checkpoint, YAML, and vocabulary from
 [Hugging Face](https://huggingface.co/LeeSangHoon/WaveGen), then place its model folder
 under `ckpts/` as shown below.
 
+## Seed-TTS evaluation
+
+Results on the complete Seed-en (1,088 utterances) and Seed-zh (2,020 utterances)
+test sets. WaveGen and V-Spec use 50 Euler steps; WaveGen-Flash uses four Euler
+steps. All three models use Mel temperature 0.
+
+| Model | EN WER (%) ↓ | EN SIM ↑ | EN UTMOS ↑ | ZH CER (%) ↓ | ZH SIM ↑ | ZH UTMOS ↑ |
+|---|---:|---:|---:|---:|---:|---:|
+| WaveGen (Pre-trained, 1300k EMA) | 1.47 | 0.755 | 3.68 | 1.75 | 0.805 | 2.87 |
+| **WaveGen V-Spec (1400k EMA)** | 1.39 | 0.743 | 3.59 | 1.65 | 0.783 | 2.79 |
+| WaveGen-Flash (48k EMA, 4 steps) | 1.49 | 0.727 | 3.53 | 1.59 | 0.768 | 2.74 |
+
+WER/CER and UTMOS are displayed to two decimal places, and SIM to three, with
+excess digits truncated rather than rounded. See the
+[Hugging Face model card](https://huggingface.co/LeeSangHoon/WaveGen#seed-tts-evaluation)
+for the evaluation settings.
+
 ## Files
 
 ```text

@@ -179,16 +179,16 @@ model for CER. No metric assets are bundled with the Flash checkpoint.
 
 The following complete Seed-TTS evaluations use the same 48k EMA weights,
 four-step schedule, original test prompts, seed 0, FP32 weights, and BF16 CUDA
-inference. Only the initial Mel temperature changes. Values are copied from
-the evaluation output without rounding; error rates are percentages and all
-metrics are macro-averaged over utterances.
+inference. Only the initial Mel temperature changes. WER/CER and UTMOS are
+truncated to two decimal places, and SIM to three decimal places (not rounded).
+Error rates are percentages and all metrics are macro-averaged over utterances.
 
 | Test set | Initial Mel temperature | WER / CER (%) ↓ | SIM ↑ | UTMOS ↑ |
 |---|---:|---:|---:|---:|
-| Seed-en (1,088 utterances) | 1 | 1.6212736915861916 | 0.7249332501498216 | 3.478904302615453 |
-| Seed-en (1,088 utterances) | **0 (default)** | **1.491869968026975** | **0.7271562968380749** | **3.5315547175705433** |
-| Seed-zh (2,020 utterances) | 1 | 1.8466378780742656 | 0.7659791491114267 | 2.6918433814355645 |
-| Seed-zh (2,020 utterances) | **0 (default)** | **1.598314219197795** | **0.7682562217854038** | **2.7408872486931264** |
+| Seed-en (1,088 utterances) | 1 | 1.62 | 0.724 | 3.47 |
+| Seed-en (1,088 utterances) | **0 (default)** | **1.49** | **0.727** | **3.53** |
+| Seed-zh (2,020 utterances) | 1 | 1.84 | 0.765 | 2.69 |
+| Seed-zh (2,020 utterances) | **0 (default)** | **1.59** | **0.768** | **2.74** |
 
 Initial Mel temperature 0 improves all three metrics over temperature 1 on
 both test sets. It is the new inference default; the checkpoint weights and
