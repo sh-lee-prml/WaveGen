@@ -258,11 +258,13 @@ should add appropriate access controls, abuse reporting, and review of suspected
 misuse.
 
 ## Reference
+### Our Previous Work
 - PeriodWave [ICLR 2025]: The first CFM-based waveform generation model
-- FlowTokenizer [ACL Findings 2026]: The first CFM-based neural audio codec model 
-- ReGen [ICML 2026]: The first CFM-based audio VAE model
-- F5-TTS [ACL 2025]
-- WavTTS 
+- FlowTokenizer [ACL Findings 2026]: The first CFM-based neural audio codec 
+- ReGen [ICML 2026]: The first CFM-based audio VAE
+### Baseline Models
+- F5-TTS [ACL 2025]: A zero-shot TTS model
+- WavTTS: Concurrent work from ByteDance. We used the official WavTTS implementation as a baseline during the rebuttal period.
 
 ## License
 
