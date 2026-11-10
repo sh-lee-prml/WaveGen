@@ -22,6 +22,9 @@
   </a>
 </div>
 
+<p><strong>WaveGen is the first end-to-end waveform text-to-speech model achieving state-of-the-art performance on the Emilia training dataset</strong></p>
+
+
 - The base model, training, inference, and evaluation code is in [src/wavegen](src/wavegen).
 - **WaveGen V-Spec is the recommended model for inference.** Its 1400k EMA Safetensors bundle is in `ckpts/WaveGen_VSpec/`; training, inference, and evaluation are packaged in [src/wavegen_v_spec](src/wavegen_v_spec/README.md).
 - **WaveGen-Flash** generates speech in four steps. Its inference code is in [src/wavegen_flash](src/wavegen_flash/README.md), with a self-contained EMA Safetensors bundle in `ckpts/WaveGen_Flash/`.
