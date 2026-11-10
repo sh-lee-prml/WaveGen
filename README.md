@@ -138,8 +138,7 @@ steps. All three models use Mel temperature 0.
 
 **WaveGen achieves state-of-the-art performance among TTS models trained on the Emilia dataset.**
 
-WER/CER and UTMOS are displayed to two decimal places, and SIM to three, with
-excess digits truncated rather than rounded. See the
+ See the
 [Hugging Face model card](https://huggingface.co/LeeSangHoon/WaveGen#seed-tts-evaluation)
 for the evaluation settings.
 
