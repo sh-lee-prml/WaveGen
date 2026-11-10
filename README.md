@@ -5,6 +5,7 @@
   <p>
     <a href="#installation"><img src="https://img.shields.io/badge/Python-3.10%2B-brightgreen.svg?logo=python&logoColor=white" alt="Python 3.10+"></a>
     <a href="https://huggingface.co/LeeSangHoon/WaveGen"><img src="https://img.shields.io/badge/Hugging%20Face-Models-yellow?logo=huggingface" alt="Hugging Face Models"></a>
+    <a href="https://huggingface.co/spaces/LeeSangHoon/WaveGen"><img src="https://img.shields.io/badge/Hugging%20Face-Space-yellow?logo=huggingface" alt="WaveGen Live Demo"></a>
     <a href="https://wavegen26.github.io/demo"><img src="https://img.shields.io/badge/Demo-Page-orange.svg" alt="WaveGen Demo Page"></a>
     <a href="https://sh-lee-prml.github.io/wavegen-tts-demo/"><img src="https://img.shields.io/badge/Benchmark-Demo-orange.svg" alt="WaveGen Benchmark Demo"></a>
     <a href="https://wavegen26.github.io/demo/spectral_forcing_visualization/"><img src="https://img.shields.io/badge/Spectral%20Forcing-Demo-blue.svg" alt="Spectral Forcing Demo"></a>
