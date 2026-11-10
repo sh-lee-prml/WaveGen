@@ -37,8 +37,8 @@ We welcome GPU resources to support the continued development of WaveGen. If you
 
 ### 26.11.10
 
-- We released the WaveGen source code and checkpoint trained on Emilia (**24 kHz audio**, **50 Hz waveform patches**)
-- **WaveGen**, **WaveGen (Fine-tuned with v-spec losses)**
+- We released the WaveGen source code and checkpoint (**WaveGen**, **WaveGen-VSpec**) trained on Emilia (**24 kHz audio**, **50 Hz waveform patches**)
+
 - **WaveGen-Flash (4 Steps)** is a four-step model distilled from the WaveGen (Vspec). We will share the distillation details soon
    
 ### 26.09.24
