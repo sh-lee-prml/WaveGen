@@ -347,5 +347,5 @@ The published model checkpoints are licensed separately under
 This work was supported by Institute of Information \& communications Technology Planning \& Evaluation (IITP) grant funded by the Korea government (MSIT) (RS-2025-02283048, Developing the Next-Generation General AI with Reliability, Ethics, and Adaptability, IITP-2026-RS-2023-00255968, the Artificial Intelligence Convergence Innovation Human Resources Development, RS-2026-25617480,  AI Star Fellowship Support
 Program(Gyeongsang National University)), National Research Foundation of Korea (NRF) grant funded by the Korea government (MSIT) (RS-2026-25518808), the “Advanced GPU Utilization Support Program” funded by the Government of the Republic of Korea (Ministry of Science and ICT), and Artificial intelligence industrial convergence cluster development project funded by the Ministry of Science and ICT (MSIT, Korea)\&Gwangju Metropolitan City.
 
-- WaveGen-S, WaveGen-B (Advanced GPU Utilization Support Program)
-- WaveGen, WaveGen (V-Spec), WaveGen-Flash (Artificial intelligence industrial convergence cluster development project)
+- Advanced GPU Utilization Support Program (WaveGen-S, WaveGen-B)
+- Artificial intelligence industrial convergence cluster development project (WaveGen, WaveGen (V-Spec), WaveGen-Flash)
