@@ -3,6 +3,7 @@
   <p><strong>NeurIPS 2026</strong></p>
 
   <p>
+    <a href="https://arxiv.org/abs/2611.12527"><img src="https://img.shields.io/badge/arXiv-2611.12527-b31b1b.svg" alt="WaveGen Paper"></a>
     <a href="#installation"><img src="https://img.shields.io/badge/Python-3.10%2B-brightgreen.svg?logo=python&logoColor=white" alt="Python 3.10+"></a>
     <a href="https://huggingface.co/LeeSangHoon/WaveGen"><img src="https://img.shields.io/badge/Hugging%20Face-Models-yellow?logo=huggingface" alt="Hugging Face Models"></a>
     <a href="https://huggingface.co/spaces/LeeSangHoon/WaveGen"><img src="https://img.shields.io/badge/Hugging%20Face-Space-yellow?logo=huggingface" alt="WaveGen Live Demo"></a>
