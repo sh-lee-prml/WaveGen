@@ -64,7 +64,7 @@ pip install -e ".[eval]"
 
 | Model | Checkpoint | Use |
 |---|---|---|
-| WaveGen (Pre-trained) | 1300k EMA | Pre-trained model |
+| WaveGen | 1300k EMA | Pre-trained model |
 | **WaveGen (Fine-tuned with v-spec losses)** | **1400k EMA** | **Recommended; default for CLI, Gradio, and V-Spec batch evaluation** |
 | WaveGen-Flash (4 Steps) | 48k EMA | Fixed four-step inference |
 
