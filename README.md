@@ -10,6 +10,7 @@
     <a href="https://wavegen26.github.io/demo"><img src="https://img.shields.io/badge/Demo-Page-orange.svg" alt="WaveGen Demo Page"></a>
     <a href="https://sh-lee-prml.github.io/wavegen-tts-demo/"><img src="https://img.shields.io/badge/Benchmark-Demo-orange.svg" alt="WaveGen Benchmark Demo"></a>
     <a href="https://wavegen26.github.io/demo/spectral_forcing_visualization/"><img src="https://img.shields.io/badge/Spectral%20Forcing-Demo-blue.svg" alt="Spectral Forcing Demo"></a>
+    <a href="https://github.com/sh-lee-prml/WaveGen-Studio"><img src="https://img.shields.io/badge/Windows-WaveGen%20Studio-0078D4.svg" alt="WaveGen Studio for Windows"></a>
   </p>
 
   <p><strong>Sang-Hoon Lee<sup>1,*</sup> and Ha-Yeong Choi<sup>2,*</sup></strong></p>
