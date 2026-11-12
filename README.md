@@ -28,6 +28,8 @@
 
 <p><strong>WaveGen is the first end-to-end waveform text-to-speech model achieving state-of-the-art performance on the Emilia training dataset</strong></p>
 
+**[WaveGen Studio](https://github.com/sh-lee-prml/WaveGen-Studio)** runs directly on Windows without installing Python.
+
 
 - The base model, training, inference, and evaluation code is in [src/wavegen](src/wavegen).
 - **WaveGen V-Spec is the recommended model for inference.** Its 1400k EMA Safetensors bundle is in `ckpts/WaveGen_VSpec/`; training, inference, and evaluation are packaged in [src/wavegen_v_spec](src/wavegen_v_spec/README.md).
@@ -38,6 +40,10 @@
 We welcome GPU resources to support the continued development of WaveGen. If you are interested in supporting this work, please contact Sang-Hoon Lee (sanghoonlee@ajou.ac.kr).
 
 ## Update
+
+### 26.11.12
+
+- Released [WaveGen Studio](https://github.com/sh-lee-prml/WaveGen-Studio), a native Windows app built with **C++** and **ONNX Runtime CUDA**, using **BF16 inference**, with **CUDA Graph** support in the native command-line runner. No Python installation is required.
 
 ### 26.11.10
 
